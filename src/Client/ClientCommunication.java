@@ -1,6 +1,7 @@
 package Client;
 
 import Server.GameData;
+import org.dyn4j.geometry.Vector2;
 
 import java.io.*;
 import java.net.Socket;
@@ -70,4 +71,58 @@ public class ClientCommunication {
         }
 
     }
+
+    public void quit(){
+        try {
+            dataOut.writeUTF("quit");
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void fetchGameData(){
+        try{
+            System.out.println("Fetching data...");
+            dataOut.writeUTF("getData");
+            Object o = objectIn.readObject();
+            if(o instanceof GameData){
+                this.gameData = (GameData) o;
+            }
+            System.out.println("Got gameData!");
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void endTurn(){
+        try{
+            dataOut.writeUTF("endTurn");
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        System.out.println("End turn");
+    }
+
+    public void shoot(Vector2 birdLocation, Vector2 birdForce){
+        try {
+            dataOut.writeUTF("shoot");
+            objectOut.writeObject(birdLocation);
+            objectOut.writeObject(birdForce);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public GameData getGameData(){
+        fetchGameData();
+        return this.gameData;
+    }
+
 }

@@ -2,13 +2,15 @@ package Server;
 
 import org.dyn4j.geometry.Vector2;
 
-public class GameData {
+import java.io.Serializable;
+
+public class GameData implements Serializable {
    private boolean hasStarted;
    private boolean isRunning;
    private boolean hasShot;
    private int firstPlayerBoxes;
    private int secondPlayerBoxes;
-   private String currentPlayerID;
+   private boolean isPlayer1Turn;
    private Vector2 birdLocation;
    private Vector2 birdForce;
    private String player1;
@@ -29,7 +31,7 @@ public class GameData {
         this.hasShot = false;
         this.firstPlayerBoxes = boxesPerPlayer;
         this.secondPlayerBoxes = boxesPerPlayer;
-        this.currentPlayerID = player1;
+        this.isPlayer1Turn = true;
         this.hasStarted = false;
         this.birdLocation = null;
         this.birdForce = null;
@@ -80,10 +82,6 @@ public class GameData {
         this.secondPlayerBoxes = secondPlayerBoxes;
     }
 
-    public String getCurrentPlayerID() {
-        return currentPlayerID;
-    }
-
     public String getPlayer1() {
         return player1;
     }
@@ -100,10 +98,6 @@ public class GameData {
         this.player2 = player2;
     }
 
-    public void setCurrentPlayerID(String currentPlayerID) {
-        this.currentPlayerID = currentPlayerID;
-    }
-
     public Vector2 getBirdLocation() {
         return birdLocation;
     }
@@ -118,5 +112,13 @@ public class GameData {
 
     public void setBirdForce(Vector2 birdForce) {
         this.birdForce = birdForce;
+    }
+
+    public boolean isPlayer1Turn() {
+        return isPlayer1Turn;
+    }
+
+    public void setPlayer1Turn(boolean player1Turn) {
+        isPlayer1Turn = player1Turn;
     }
 }
