@@ -3,9 +3,11 @@ package Game;
 import org.jfree.fx.FXGraphics2D;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 public class Background {
@@ -14,7 +16,7 @@ public class Background {
 
     public Background(){
         try {
-            this.backgroundImage = ImageIO.read(getClass().getResource("background.png"));
+            this.backgroundImage = ImageIO.read(new File("res/background.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
