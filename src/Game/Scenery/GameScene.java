@@ -2,9 +2,12 @@ package Game.Scenery;
 
 import Game.Background;
 import Game.Logic.Camera;
+import Game.Logic.GameEngine;
+import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.dyn4j.dynamics.World;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
@@ -23,6 +26,8 @@ public class GameScene implements Scenery{
     private BorderPane mainPane;
     private ResizableCanvas canvas;
 
+    private GameEngine gameEngine;
+
     public GameScene(){
         this.mainPane = new BorderPane();
 
@@ -33,6 +38,33 @@ public class GameScene implements Scenery{
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
 
         camera = new Camera(canvas, g -> draw(g), g2d);
+
+        this.init();
+
+        new AnimationTimer(){
+            long last = 1;
+
+            @Override
+            public void handle(long now){
+                if (last == -1){
+                    last = now;
+                }
+                update((now-last) / 1000000000.0);
+                last = now;
+                draw(g2d);
+            }
+        }.start();
+
+        this.scene = new Scene(this.mainPane);
+    }
+
+    private void init(){
+        this.gameEngine = new GameEngine(new World());
+    }
+
+    private void update(double deltaTime){
+        //@TODO mousepicker.update
+        //@TODO world update
     }
 
     private void draw(FXGraphics2D graphics){
@@ -48,6 +80,7 @@ public class GameScene implements Scenery{
         graphics.scale(1, -1);
 
         //draw GameObjects
+        this.gameEngine.draw(graphics);
     }
 
     public Scene getScene(){ return this.scene; }
