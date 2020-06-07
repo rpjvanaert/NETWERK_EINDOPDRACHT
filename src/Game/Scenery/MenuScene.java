@@ -20,14 +20,12 @@ public class MenuScene {
 
         this.buttonHost = new Button("Host");
         this.buttonHost.setOnAction(event -> {
-            //@TODO server shit
             this.nextScene.init(true);
             this.primaryStage.setScene(this.nextScene.getScene());
         });
 
         this.buttonJoin = new Button("Join");
         this.buttonJoin.setOnAction(event -> {
-            //@TODO client shit
             this.nextScene.init(false);
             this.primaryStage.setScene(this.nextScene.getScene());
         });
