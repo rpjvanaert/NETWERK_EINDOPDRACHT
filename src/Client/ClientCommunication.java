@@ -35,12 +35,14 @@ public class ClientCommunication {
             return true;
         }
         try {
+            //setup streams
             this.socket = new Socket(host, port);
             this.dataIn = new DataInputStream(this.socket.getInputStream());
             this.dataOut = new DataOutputStream(this.socket.getOutputStream());
             this.objectOut = new ObjectOutputStream(this.socket.getOutputStream());
             this.objectIn = new ObjectInputStream(this.socket.getInputStream());
 
+            //Making sure communication is correct
             String server = this.dataIn.readUTF();
             System.out.println("Host: "+ server);
 
@@ -52,6 +54,7 @@ public class ClientCommunication {
                 this.dataOut.writeUTF("Error");
             }
 
+            //send start signal
             start();
 
         }
@@ -84,6 +87,9 @@ public class ClientCommunication {
         }
     }
 
+    /**
+     * Fetches the scoreSystem of the host and updates it locally
+     */
     public void fetchGameData(){
         try {
             dataOut.writeUTF("getData");
@@ -100,16 +106,11 @@ public class ClientCommunication {
 
     }
 
-    public void endTurn(){
-        try{
-            dataOut.writeUTF("endTurn");
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        System.out.println("End turn");
-    }
-
+    /**
+     * Sends shot info to the Host
+     * @param birdForceX the force on the x-axis
+     * @param birdForceY the force on the y-axis
+     */
     public void shoot(double birdForceX, double birdForceY){
         try {
             dataOut.writeUTF("shoot");

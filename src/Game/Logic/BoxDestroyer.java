@@ -20,13 +20,14 @@ public class BoxDestroyer implements ContactListener {
     private ClientCommunication client;
     private boolean isRedPlayer;
 
+    private GameEngine gameEngine;
     private Body redBall, blueBall, ground;
     private ArrayList<Body> bodiesCrates;
     private ArrayList<GameObject> objectsCrates;
 
     public BoxDestroyer(World world, Label scoreLabel,
                         ArrayList<GameObject> objectsCrates, Body redBall, Body blueBall,
-                        ArrayList<Body> bodiesCrates, Body ground, ClientCommunication client, boolean isRedPlayer){
+                        ArrayList<Body> bodiesCrates, Body ground, ClientCommunication client, boolean isRedPlayer, GameEngine gameEngine){
         this.world = world;
         this.scoreLabel = scoreLabel;
         this.redBall = redBall;
@@ -89,7 +90,11 @@ public class BoxDestroyer implements ContactListener {
 
                 //Handles if bird hits ground.
             } else if (this.ground.equals(contactPoint.getBody1()) || this.ground.equals(contactPoint.getBody2())){
-                ScoreSystem.getInstance().turn();
+                if(isRedPlayer) {
+                    ScoreSystem.getInstance().turn();
+                }else{
+                    gameEngine.setBallNull(true);
+                }
                 this.redBall = null;
             }
 
@@ -114,7 +119,12 @@ public class BoxDestroyer implements ContactListener {
 
                 //Handles if bird hits ground.
             } else if (this.ground.equals(contactPoint.getBody1()) || this.ground.equals(contactPoint.getBody2())){
-                ScoreSystem.getInstance().turn();
+                if(isRedPlayer) {
+                    ScoreSystem.getInstance().turn();
+                }
+                else {
+                    gameEngine.setBallNull(false);
+                }
                 this.blueBall = null;
             }
         }

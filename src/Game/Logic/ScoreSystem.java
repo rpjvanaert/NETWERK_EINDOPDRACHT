@@ -16,8 +16,11 @@ public class ScoreSystem implements Serializable {
     private int numberOfPlayers;
     private double birdForceX;
     private double birdForceY;
+    private boolean hasShot;
 
     private static ScoreSystem instance = null;
+
+
 
     /**
      * ScoreSystem (Constructor)
@@ -36,7 +39,7 @@ public class ScoreSystem implements Serializable {
         this.numberOfPlayers = 0;
         this.birdForceX = 0;
         this.birdForceY = 0;
-
+        this.hasShot = false;
     }
 
     /**
@@ -121,7 +124,10 @@ public class ScoreSystem implements Serializable {
      * turn
      * Sets turn to red from blue or from blue to red.
      */
-    public void turn(){ this.redTurn = !this.redTurn; }
+    public void turn(){
+        this.redTurn = !this.redTurn;
+        this.hasShot = false;
+    }
 
     /**
      * toString
@@ -222,5 +228,13 @@ public class ScoreSystem implements Serializable {
      */
     public Force getBirdForce(){
         return new Force(birdForceX, birdForceY);
+    }
+
+    public boolean isHasShot() {
+        return hasShot;
+    }
+
+    public void setHasShot(boolean hasShot) {
+        this.hasShot = hasShot;
     }
 }

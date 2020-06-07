@@ -104,10 +104,10 @@ public class GameEngine {
         if(isRedPlayer){
             this.client = null;
             this.boxDestroyer = new BoxDestroyer(this.world, this.scoreLabel, this.objectCrates,
-                    this.bodyRedBird, this.bodyBlueBird, this.cratesBody, this.bodyGround, null, this.isRedPlayer);
+                    this.bodyRedBird, this.bodyBlueBird, this.cratesBody, this.bodyGround, null, this.isRedPlayer, this);
             Server server = new Server(6969);
 
-
+            //setup server
             Thread serverThread = new Thread(server);
             serverThread.start();
         }
@@ -116,12 +116,14 @@ public class GameEngine {
 
             this.client = new ClientCommunication("Client");
             this.boxDestroyer = new BoxDestroyer(this.world, this.scoreLabel, this.objectCrates,
-                    this.bodyRedBird, this.bodyBlueBird, this.cratesBody, this.bodyGround, this.client, this.isRedPlayer);
+                    this.bodyRedBird, this.bodyBlueBird, this.cratesBody, this.bodyGround, this.client, this.isRedPlayer, this);
+            //connect to host
             client.connect("localhost", 6969);
         }
 
         this.world.addListener(this.boxDestroyer);
 
+        // the time to update the SystemScore
         this.updateTime = 1 * 1000000;
         this.timeSinceLastUpdate = 0;
 
@@ -134,7 +136,7 @@ public class GameEngine {
      * Sets ball null, red for true, blue for false.
      * @param isRed
      */
-    private void setBallNull(boolean isRed){
+    public void setBallNull(boolean isRed){
         if (isRed){
             this.world.removeBody(this.bodyRedBird);
             this.bodyRedBird = null;
@@ -235,13 +237,16 @@ public class GameEngine {
      */
     public void shoot(double x, double y){
         if (!ScoreSystem.getInstance().isOver()){
+            ScoreSystem.getInstance().setHasShot(true);
             if (ScoreSystem.getInstance().isRedTurn() && this.isRedPlayer){
                 this.bodyRedBird.applyForce(new Force(x, y));
             } else if (!ScoreSystem.getInstance().isRedTurn() && !this.isRedPlayer){
                 this.bodyBlueBird.applyForce(new Force(x, y));
             }
+            //If you are the client, send shoot message
             if(!isRedPlayer){
                 client.shoot(x,y);
+
             }
         }
     }
@@ -271,13 +276,15 @@ public class GameEngine {
             }
 
         }
-        if(!lastForce.getForce().equals(ScoreSystem.getInstance().getBirdForce().getForce())){
+        //Shoots the bird of the other player
+        if(!lastForce.getForce().equals(ScoreSystem.getInstance().getBirdForce().getForce()) && !ScoreSystem.getInstance().isHasShot()){
             if(ScoreSystem.getInstance().isRedTurn()){
                 this.bodyRedBird.applyForce(ScoreSystem.getInstance().getBirdForce());
             }
-            else{
+            else if(!ScoreSystem.getInstance().isRedTurn()){
                 this.bodyBlueBird.applyForce(ScoreSystem.getInstance().getBirdForce());
             }
+            ScoreSystem.getInstance().setHasShot(true);
         }
         this.lastForce = ScoreSystem.getInstance().getBirdForce();
     }

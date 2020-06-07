@@ -23,6 +23,7 @@ public class ClientThread implements Runnable {
              ObjectOutputStream objectOut = new ObjectOutputStream(client.getOutputStream());
              ObjectInputStream objectIn = new ObjectInputStream(client.getInputStream())) {
 
+            //Making sure communication with the client is ok
             dataOut.writeUTF("FuriousFlamingos Host 1.0\n");
             System.out.println("sent: FuriousFlamingos Host 1.0\n");
             dataOut.writeUTF("Player ID?\n");
@@ -32,9 +33,10 @@ public class ClientThread implements Runnable {
             System.out.println("Host got: " + playerAnswer);
             ScoreSystem.getInstance().setPlayer2(playerID);
 
-
+            //give the start command
             dataOut.writeUTF("start");
 
+            //Checks for messages while the game is running
             while (running && ScoreSystem.getInstance().isRunning()) {
                 String command = dataIn.readUTF();
                 System.out.println("Got command: "+command);
@@ -45,17 +47,14 @@ public class ClientThread implements Runnable {
                         System.out.println("The game has ended");
                         break;
 
+                        //sends the most up to date instance of ScoreSystem
                     case "getData":
                         System.out.println("RedScore: "+ScoreSystem.getInstance().getRedScore());
                     objectOut.writeObject(ScoreSystem.getInstance());
                     objectOut.reset();
                     break;
 
-                    case "endTurn":
-                        ScoreSystem.getInstance().turn();
-                        System.out.println("Ended the turn");
-                        break;
-
+                    //Receives the shot data of the Client
                     case "shoot":
                         try {
                             Object o = objectIn.readObject();

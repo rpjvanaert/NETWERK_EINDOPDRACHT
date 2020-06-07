@@ -9,25 +9,21 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javafx.application.Application.launch;
 
 public class Server implements Runnable{
 
-    private boolean stop;
     private int port;
     private List<Thread> clientThreads;
     private List<Socket> clientSockets;
 
     public Server(int port) {
         this.port = port;
-        this.stop = true;
         this.clientThreads = new ArrayList<>();
         this.clientSockets = new ArrayList<>();
     }
 
     @Override
     public void run() {
-        this.stop = false;
 
         try {
             ServerSocket socket = new ServerSocket(this.port);
@@ -42,6 +38,7 @@ public class Server implements Runnable{
                 clientThreads.add(t);
                 t.start();
             }
+            //Set the game to start
             ScoreSystem.getInstance().start();
             }
         catch(IOException e){
