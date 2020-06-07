@@ -17,14 +17,12 @@ public class Server implements Runnable{
     private int port;
     private List<Thread> clientThreads;
     private List<Socket> clientSockets;
-    private ScoreSystem scoreSystem;
 
-    public Server(int port, ScoreSystem scoreSystem) {
+    public Server(int port) {
         this.port = port;
         this.stop = true;
         this.clientThreads = new ArrayList<>();
         this.clientSockets = new ArrayList<>();
-        this.scoreSystem = scoreSystem;
     }
 
     @Override
@@ -40,11 +38,11 @@ public class Server implements Runnable{
                 Socket client = socket.accept();
                 System.out.println("Client added");
                 clientSockets.add(client);
-                Thread t =new Thread(new ClientThread(client, this.scoreSystem));
+                Thread t =new Thread(new ClientThread(client));
                 clientThreads.add(t);
                 t.start();
             }
-            scoreSystem.start();
+            ScoreSystem.getInstance().start();
             }
         catch(IOException e){
             e.printStackTrace();

@@ -10,11 +10,9 @@ import java.net.Socket;
 public class ClientThread implements Runnable {
     private Socket client;
     private String playerID;
-    private ScoreSystem scoreSystem;
 
-    public ClientThread(Socket client, ScoreSystem scoreSystem) {
+    public ClientThread(Socket client) {
         this.client = client;
-        this.scoreSystem = scoreSystem;
     }
 
     @Override
@@ -32,30 +30,29 @@ public class ClientThread implements Runnable {
             String playerAnswer = dataIn.readUTF();
             this.playerID = playerAnswer;
             System.out.println("Host got: " + playerAnswer);
-            scoreSystem.setPlayer2(playerID);
+            ScoreSystem.getInstance().setPlayer2(playerID);
 
 
             dataOut.writeUTF("start");
 
-            while (running && scoreSystem.isRunning()) {
+            while (running && ScoreSystem.getInstance().isRunning()) {
                 String command = dataIn.readUTF();
                 System.out.println("Got command: "+command);
                 switch (command) {
                     case "quit":
                         running = false;
-                        scoreSystem.stopGame();
+                        ScoreSystem.getInstance().stopGame();
                         System.out.println("The game has ended");
                         break;
 
                     case "getData":
-                        this.scoreSystem = ScoreSystem.getInstance();
-                        System.out.println("Red score: "+this.scoreSystem.getRedScore());
-                        System.out.println("Sending gameData");
-                        objectOut.writeObject(this.scoreSystem);
-                        break;
+                        System.out.println("RedScore: "+ScoreSystem.getInstance().getRedScore());
+                    objectOut.writeObject(ScoreSystem.getInstance());
+                    objectOut.reset();
+                    break;
 
                     case "endTurn":
-                        this.scoreSystem.turn();
+                        ScoreSystem.getInstance().turn();
                         System.out.println("Ended the turn");
                         break;
 
@@ -64,8 +61,7 @@ public class ClientThread implements Runnable {
                             Object o = objectIn.readObject();
                             if(o instanceof double[]){
                                 double[] birdForce =(double[]) o;
-                                Force force = new Force(birdForce[0],birdForce[1]);
-                                this.scoreSystem.setBirdForce(force);
+                                ScoreSystem.getInstance().setBirdForce(birdForce[0], birdForce[1]);
                             }
                         }
 

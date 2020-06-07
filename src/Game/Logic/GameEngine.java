@@ -39,8 +39,8 @@ public class GameEngine {
 
     private Force lastForce;
 
-    private long updateTime;
-    private long timeSinceLastUpdate;
+    private double updateTime;
+    private double timeSinceLastUpdate;
 
     private static final double xSlingshot = -5.0;
 
@@ -94,7 +94,7 @@ public class GameEngine {
             this.client = null;
             this.boxDestroyer = new BoxDestroyer(this.world, this.scoreLabel, this.objectCrates,
                     this.bodyRedBird, this.bodyBlueBird, this.cratesBody, this.bodyGround, null, this.isRedPlayer);
-            Server server = new Server(6969, ScoreSystem.getInstance());
+            Server server = new Server(6969);
 
 
             Thread serverThread = new Thread(server);
@@ -111,10 +111,10 @@ public class GameEngine {
 
         this.world.addListener(this.boxDestroyer);
 
-        this.updateTime = 1;
+        this.updateTime = 1 * 1000000;
         this.timeSinceLastUpdate = 0;
 
-        this.lastForce = null;
+        this.lastForce = new Force(0,0);
 
     }
 
@@ -211,14 +211,16 @@ public class GameEngine {
     public void update(double deltaTime){
         world.update(deltaTime);
         if(!this.isRedPlayer) {
-            System.out.println("Blue Update!");
-            timeSinceLastUpdate += deltaTime;
-            System.out.println("Updating scoreSystem...");
-            ScoreSystem.setInstance(client.fetchGameData());
-            System.out.println("Update Succes!");
+            timeSinceLastUpdate += (deltaTime * 1000000);
+            if(timeSinceLastUpdate >= updateTime) {
+                timeSinceLastUpdate = 0;
+                System.out.println("Updating scoreSystem...");
+                client.fetchGameData();
+                System.out.println("Update Succes!");
+            }
 
         }
-        if(lastForce != ScoreSystem.getInstance().getBirdForce()){
+        if(!lastForce.getForce().equals(ScoreSystem.getInstance().getBirdForce().getForce())){
             if(ScoreSystem.getInstance().isRedTurn()){
                 this.bodyRedBird.applyForce(ScoreSystem.getInstance().getBirdForce());
             }

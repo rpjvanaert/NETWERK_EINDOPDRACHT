@@ -11,10 +11,11 @@ public class ScoreSystem implements Serializable {
     private int blueScore;
     private boolean redTurn;
     private boolean isRunning;
-    private Force birdForce;
     private String player1;
     private String player2;
     private int numberOfPlayers;
+    private double birdForceX;
+    private double birdForceY;
 
     private static ScoreSystem instance = null;
 
@@ -24,10 +25,12 @@ public class ScoreSystem implements Serializable {
         this.blueScore = 0;
         this.redTurn = true;
         this.isRunning = false;
-        this.birdForce = null;
         this.player1 = null;
         this.player2 = null;
         this.numberOfPlayers = 0;
+        this.birdForceX = 0;
+        this.birdForceY = 0;
+
     }
 
     public static ScoreSystem getInstance(){
@@ -103,19 +106,20 @@ public class ScoreSystem implements Serializable {
         this.player2 = player2;
     }
 
-    public Force getBirdForce() {
-        return birdForce;
-    }
-
-    public void setBirdForce(Force birdForce) {
-        this.birdForce = birdForce;
-    }
-
     public int getRedScore() {
         return redScore;
     }
 
     public int getBlueScore() {
         return blueScore;
+    }
+
+    public void setBirdForce(double x, double y){
+        this.birdForceY = y;
+        this.birdForceX = x;
+    }
+
+    public Force getBirdForce(){
+        return new Force(birdForceX, birdForceY);
     }
 }

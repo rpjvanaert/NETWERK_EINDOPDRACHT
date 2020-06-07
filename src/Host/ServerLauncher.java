@@ -9,7 +9,7 @@ public class ServerLauncher {
         ScoreSystem scoreSystem = new ScoreSystem(15);
         scoreSystem.setPlayer1("Host");
 
-        Server server = new Server(6969, scoreSystem);
+        Server server = new Server(6969);
 
 
         Thread serverThread = new Thread(server);

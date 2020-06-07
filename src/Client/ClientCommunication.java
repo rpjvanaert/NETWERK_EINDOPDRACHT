@@ -13,7 +13,6 @@ import static javafx.application.Application.launch;
 public class ClientCommunication {
     private String playerID;
     private boolean isConnected;
-    private ScoreSystem scoreSystem;
     private Socket socket;
     private DataInputStream dataIn;
     private DataOutputStream dataOut;
@@ -23,7 +22,6 @@ public class ClientCommunication {
     public ClientCommunication(String playerID) {
         this.playerID = playerID;
         this.isConnected = false;
-        this.scoreSystem = null;
         this.socket = null;
         this.dataIn = null;
         this.dataOut = null;
@@ -86,27 +84,20 @@ public class ClientCommunication {
         }
     }
 
-    public ScoreSystem fetchGameData(){
-        try{
-            System.out.println("Fetching data...");
+    public void fetchGameData(){
+        try {
             dataOut.writeUTF("getData");
             Object o = objectIn.readObject();
-            if(o instanceof ScoreSystem){
-                System.out.println("Got a scoreSystem");
+            if(o instanceof  ScoreSystem){
+                System.out.println("Red score: "+((ScoreSystem) o).getRedScore());
                 ScoreSystem.setInstance((ScoreSystem) o);
             }
-            this.scoreSystem = ScoreSystem.getInstance();
-            System.out.println("Got gameData!");
-            System.out.println("RedScore: "+ this.scoreSystem.getRedScore());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
-        return this.scoreSystem;
     }
 
     public void endTurn(){
