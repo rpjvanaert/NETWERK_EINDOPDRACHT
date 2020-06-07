@@ -1,11 +1,19 @@
 package Game.Scenery;
 
 import Game.Background;
+import Game.GUI;
 import Game.Logic.Camera;
 import Game.Logic.GameEngine;
+import Game.Logic.MousePicker;
+import Game.Logic.ScoreSystem;
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import org.dyn4j.dynamics.World;
 import org.jfree.fx.FXGraphics2D;
@@ -19,6 +27,7 @@ public class GameScene implements Scenery{
     private Stage primaryStage;
     private Scenery nextScene;
     private Scene scene;
+//    private MenuScene menuScene;
 
     private Background background;
 
@@ -26,10 +35,20 @@ public class GameScene implements Scenery{
     private BorderPane mainPane;
     private ResizableCanvas canvas;
 
+    private HBox hBox;
+    private Button shootBlue;
+    private Label scoreLabel;
+    private javafx.scene.control.Button backButton;
+
     private GameEngine gameEngine;
+    private MousePicker mousePicker;
 
     public GameScene(){
         this.mainPane = new BorderPane();
+        this.hBox = new HBox();
+
+        this.scoreLabel = new Label();
+        this.hBox.getChildren().add(this.scoreLabel);
 
         this.background = new Background();
 
@@ -56,15 +75,44 @@ public class GameScene implements Scenery{
         }.start();
 
         this.scene = new Scene(this.mainPane);
+
+        this.backButton = new Button("Go back");
+        this.backButton.setOnAction(event -> {
+            this.goToMenu();
+        });
+        this.shootBlue = new Button("Shoot");
+        this.shootBlue.setOnAction(event -> {
+            this.gameEngine.shoot();
+        });
+        this.hBox.getChildren().addAll(this.backButton, this.shootBlue);
+        this.mainPane.setTop(this.hBox);
+    }
+
+    private void goToMenu(){
+        GameScene gameScene = new GameScene();
+        gameScene.setNextScene(this.nextScene);
+        gameScene.setPrimary(this.primaryStage);
+        this.nextScene.setNextScene(gameScene);
+        this.primaryStage.setScene(this.nextScene.getScene());
+        ScoreSystem.getInstance().reset();
+        //@TODO reset to menu
     }
 
     private void init(){
-        this.gameEngine = new GameEngine(new World());
+        this.gameEngine = new GameEngine(new World(), this.scoreLabel);
+        this.mousePicker = new MousePicker(this.canvas);
     }
 
     private void update(double deltaTime){
-        //@TODO mousepicker.update
-        //@TODO world update
+        if (!mousePicker.readPos()){
+            Point2D mousePos = mousePicker.getMousePos();
+            this.gameEngine.shoot(mousePos);
+        }
+        this.gameEngine.update(deltaTime);
+
+        if (ScoreSystem.getInstance().isOver()){
+//            this.goToMenu();
+        }
     }
 
     private void draw(FXGraphics2D graphics){
@@ -81,11 +129,27 @@ public class GameScene implements Scenery{
 
         //draw GameObjects
         this.gameEngine.draw(graphics);
+
+        if (ScoreSystem.getInstance().isOver()){
+            Font font = new Font("Arial", Font.PLAIN, 60);
+            Shape shape = font.createGlyphVector(graphics.getFontRenderContext(), ScoreSystem.getInstance().toString()).getOutline();
+            AffineTransform at = new AffineTransform();
+            at.setToScale(1, -1);
+            at.translate(-220,0);
+            graphics.setPaint(Color.WHITE);
+            graphics.fill(at.createTransformedShape(shape));
+            graphics.setPaint(Color.BLACK);
+            graphics.draw(at.createTransformedShape(shape));
+        }
     }
 
     public Scene getScene(){ return this.scene; }
 
     public void setPrimary(Stage primaryStage){ this.primaryStage = primaryStage; }
+
+//    public void setMenuScene(MenuScene menuScene){
+//        this.menuScene = menuScene;
+//    }
 
     public void setNextScene(Scenery nextScene){ this.nextScene = nextScene; }
 }
