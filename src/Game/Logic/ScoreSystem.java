@@ -1,14 +1,17 @@
 package Game.Logic;
 
+import org.dyn4j.dynamics.Force;
 import org.dyn4j.geometry.Vector2;
 
-public class ScoreSystem {
+import java.io.Serializable;
+
+public class ScoreSystem implements Serializable {
     private int maxScore;
     private int redScore;
     private int blueScore;
     private boolean redTurn;
     private boolean isRunning;
-    private Vector2 birdForce;
+    private Force birdForce;
     private String player1;
     private String player2;
     private int numberOfPlayers;
@@ -32,6 +35,12 @@ public class ScoreSystem {
             instance = new ScoreSystem(15);
         }
         return instance;
+    }
+
+    public static void setInstance(ScoreSystem newScoreSystem){
+        if(newScoreSystem != null){
+            instance = newScoreSystem;
+        }
     }
 
     public void reset(){
@@ -94,11 +103,19 @@ public class ScoreSystem {
         this.player2 = player2;
     }
 
-    public Vector2 getBirdForce() {
+    public Force getBirdForce() {
         return birdForce;
     }
 
-    public void setBirdForce(Vector2 birdForce) {
+    public void setBirdForce(Force birdForce) {
         this.birdForce = birdForce;
+    }
+
+    public int getRedScore() {
+        return redScore;
+    }
+
+    public int getBlueScore() {
+        return blueScore;
     }
 }

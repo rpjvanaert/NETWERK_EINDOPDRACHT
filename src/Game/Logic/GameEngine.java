@@ -1,5 +1,7 @@
 package Game.Logic;
 
+import Client.ClientCommunication;
+import Host.Server;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
 import org.dyn4j.dynamics.Body;
@@ -33,6 +35,12 @@ public class GameEngine {
     private GameObject gameObjectSlingshot;
     private ArrayList<Body> cratesBody;
     private ArrayList<GameObject> cratesGameObjects;
+    private ClientCommunication client;
+
+    private Force lastForce;
+
+    private long updateTime;
+    private long timeSinceLastUpdate;
 
     private static final double xSlingshot = -5.0;
 
@@ -41,6 +49,7 @@ public class GameEngine {
         this.world.setGravity(new Vector2(0, -9.8));
 
         this.isRedPlayer = playerRed;
+
 
         this.scoreLabel = scoreLabel;
 
@@ -78,10 +87,35 @@ public class GameEngine {
         //                        ArrayList<GameObject> objectsCrates, Body redBall, Body blueBall,
         //                        ArrayList<Body> bodiesCrates){
 
-        this.boxDestroyer = new BoxDestroyer(this.world, this.scoreLabel, this.objectCrates,
-                this.bodyRedBird, this.bodyBlueBird, this.cratesBody, this.bodyGround);
+
+
+        //if is host
+        if(isRedPlayer){
+            this.client = null;
+            this.boxDestroyer = new BoxDestroyer(this.world, this.scoreLabel, this.objectCrates,
+                    this.bodyRedBird, this.bodyBlueBird, this.cratesBody, this.bodyGround, null, this.isRedPlayer);
+            Server server = new Server(6969, ScoreSystem.getInstance());
+
+
+            Thread serverThread = new Thread(server);
+            serverThread.start();
+        }
+        //if client
+        else{
+
+            this.client = new ClientCommunication("Client");
+            this.boxDestroyer = new BoxDestroyer(this.world, this.scoreLabel, this.objectCrates,
+                    this.bodyRedBird, this.bodyBlueBird, this.cratesBody, this.bodyGround, this.client, this.isRedPlayer);
+            client.connect("localhost", 6969);
+        }
 
         this.world.addListener(this.boxDestroyer);
+
+        this.updateTime = 1;
+        this.timeSinceLastUpdate = 0;
+
+        this.lastForce = null;
+
     }
 
     private void setBallNull(boolean isRed){
@@ -168,11 +202,31 @@ public class GameEngine {
             } else if (!ScoreSystem.getInstance().isRedTurn() && !this.isRedPlayer){
                 this.bodyBlueBird.applyForce(new Force(x, y));
             }
+            if(!isRedPlayer){
+                client.shoot(x,y);
+            }
         }
     }
 
     public void update(double deltaTime){
         world.update(deltaTime);
+        if(!this.isRedPlayer) {
+            System.out.println("Blue Update!");
+            timeSinceLastUpdate += deltaTime;
+            System.out.println("Updating scoreSystem...");
+            ScoreSystem.setInstance(client.fetchGameData());
+            System.out.println("Update Succes!");
+
+        }
+        if(lastForce != ScoreSystem.getInstance().getBirdForce()){
+            if(ScoreSystem.getInstance().isRedTurn()){
+                this.bodyRedBird.applyForce(ScoreSystem.getInstance().getBirdForce());
+            }
+            else{
+                this.bodyBlueBird.applyForce(ScoreSystem.getInstance().getBirdForce());
+            }
+        }
+        this.lastForce = ScoreSystem.getInstance().getBirdForce();
     }
 
     public void draw(FXGraphics2D g2d){

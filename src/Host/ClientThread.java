@@ -1,6 +1,7 @@
 package Host;
 
 import Game.Logic.ScoreSystem;
+import org.dyn4j.dynamics.Force;
 import org.dyn4j.geometry.Vector2;
 
 import java.io.*;
@@ -47,6 +48,8 @@ public class ClientThread implements Runnable {
                         break;
 
                     case "getData":
+                        this.scoreSystem = ScoreSystem.getInstance();
+                        System.out.println("Red score: "+this.scoreSystem.getRedScore());
                         System.out.println("Sending gameData");
                         objectOut.writeObject(this.scoreSystem);
                         break;
@@ -59,8 +62,10 @@ public class ClientThread implements Runnable {
                     case "shoot":
                         try {
                             Object o = objectIn.readObject();
-                            if(o instanceof Vector2){
-                                this.scoreSystem.setBirdForce((Vector2) o);
+                            if(o instanceof double[]){
+                                double[] birdForce =(double[]) o;
+                                Force force = new Force(birdForce[0],birdForce[1]);
+                                this.scoreSystem.setBirdForce(force);
                             }
                         }
 

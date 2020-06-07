@@ -1,5 +1,6 @@
 package Host;
 
+import Game.GUI;
 import Game.Logic.ScoreSystem;
 
 import java.io.IOException;
@@ -7,6 +8,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
+import static javafx.application.Application.launch;
 
 public class Server implements Runnable{
 
@@ -42,7 +45,6 @@ public class Server implements Runnable{
                 t.start();
             }
             scoreSystem.start();
-
             }
         catch(IOException e){
             e.printStackTrace();

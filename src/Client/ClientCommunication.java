@@ -1,10 +1,14 @@
 package Client;
 
+import Game.GUI;
 import Game.Logic.ScoreSystem;
+import org.dyn4j.dynamics.Force;
 import org.dyn4j.geometry.Vector2;
 
 import java.io.*;
 import java.net.Socket;
+
+import static javafx.application.Application.launch;
 
 public class ClientCommunication {
     private String playerID;
@@ -64,6 +68,7 @@ public class ClientCommunication {
         try {
             String command = dataIn.readUTF();
             System.out.println(this.playerID+": start!");
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -81,15 +86,19 @@ public class ClientCommunication {
         }
     }
 
-    private void fetchGameData(){
+    public ScoreSystem fetchGameData(){
         try{
             System.out.println("Fetching data...");
             dataOut.writeUTF("getData");
             Object o = objectIn.readObject();
             if(o instanceof ScoreSystem){
-                this.scoreSystem = (ScoreSystem) o;
+                System.out.println("Got a scoreSystem");
+                ScoreSystem.setInstance((ScoreSystem) o);
             }
+            this.scoreSystem = ScoreSystem.getInstance();
             System.out.println("Got gameData!");
+            System.out.println("RedScore: "+ this.scoreSystem.getRedScore());
+
         }
         catch (IOException e){
             e.printStackTrace();
@@ -97,6 +106,7 @@ public class ClientCommunication {
         catch (ClassNotFoundException e){
             e.printStackTrace();
         }
+        return this.scoreSystem;
     }
 
     public void endTurn(){
@@ -109,9 +119,12 @@ public class ClientCommunication {
         System.out.println("End turn");
     }
 
-    public void shoot(Vector2 birdForce){
+    public void shoot(double birdForceX, double birdForceY){
         try {
             dataOut.writeUTF("shoot");
+            double[] birdForce = new double[2];
+            birdForce[0] = birdForceX;
+            birdForce[1] = birdForceY;
             objectOut.writeObject(birdForce);
         }
         catch (IOException e){
@@ -119,9 +132,9 @@ public class ClientCommunication {
         }
     }
 
-    public ScoreSystem getScoreSystem(){
-        fetchGameData();
-        return this.scoreSystem;
-    }
+//    public ScoreSystem getScoreSystem(){
+//        fetchGameData();
+//        return this.scoreSystem;
+//    }
 
 }

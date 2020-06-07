@@ -13,7 +13,6 @@ public class ClientLauncher {
         ClientCommunication client = new ClientCommunication("Client");
         client.connect("localhost", 6969);
 
-        launch(GUI.class);
 //
 //        GameData gameData = client.getGameData();
 //        System.out.println("Host name: " +gameData.getPlayer1());
