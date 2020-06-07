@@ -48,7 +48,6 @@ public class GameScene implements Scenery{
         this.hBox = new HBox();
 
         this.scoreLabel = new Label();
-        this.hBox.getChildren().add(this.scoreLabel);
 
         this.background = new Background();
 
@@ -84,7 +83,7 @@ public class GameScene implements Scenery{
         this.shootBlue.setOnAction(event -> {
             this.gameEngine.shoot();
         });
-        this.hBox.getChildren().addAll(this.backButton, this.shootBlue);
+        this.hBox.getChildren().addAll(this.backButton, this.shootBlue, this.scoreLabel);
         this.mainPane.setTop(this.hBox);
     }
 
