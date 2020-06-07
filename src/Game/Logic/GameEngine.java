@@ -17,6 +17,8 @@ public class GameEngine {
     private ArrayList<GameObject> objectCrates;
     private World world;
 
+    private boolean isRedPlayer;
+
     private Label scoreLabel;
 
     private BoxDestroyer boxDestroyer;
@@ -34,9 +36,11 @@ public class GameEngine {
 
     private static final double xSlingshot = -5.0;
 
-    public GameEngine(World world, Label scoreLabel){
+    public GameEngine(World world, Label scoreLabel, boolean playerRed){
         this.world = world;
         this.world.setGravity(new Vector2(0, -9.8));
+
+        this.isRedPlayer = playerRed;
 
         this.scoreLabel = scoreLabel;
 
@@ -49,8 +53,9 @@ public class GameEngine {
         this.gameObjectBlueBird = null;
 
         this.createBoxRow(0,3);
-        this.createBoxRow(1,2);
-        this.createBoxRow(2,3);
+        this.createBoxRow(1,3);
+        this.createBoxRow(2,4);
+        this.createBoxRow(3,5);
 
         this.bodyGround = new Body();
         this.bodyGround.addFixture((Geometry.createRectangle(999, 0.8)));
@@ -126,7 +131,7 @@ public class GameEngine {
         box.addFixture(Geometry.createRectangle(0.8, 0.8));
         box.getTransform().setTranslation(x, y + 0.4);
         box.setMass(MassType.NORMAL);
-        box.getFixture(0).setRestitution(0.10);
+        box.getFixture(0).setRestitution(0.0);
         box.getFixture(0).setDensity(999);
         this.world.addBody(box);
         this.cratesBody.add(box);
@@ -137,24 +142,31 @@ public class GameEngine {
 
     public void shoot(Point2D point){
 //        this.bodyRedBird.setTransform();
-        if (point.getX() < 420 && point.getX() >= 0 && point.getY() < 1080 && point.getY() > 520 && !ScoreSystem.getInstance().isOver()){
-            Force force = new Force(-(point.getX() -420)/2,-(point.getY() - 520));
-
-            if (ScoreSystem.getInstance().isRedTurn()){
-                this.bodyRedBird.applyForce(force);
-            } else {
-                this.bodyBlueBird.applyForce(force);
-            }
-            // @TODO APPLIES FORCE
+//        if (point.getX() < 420 && point.getX() >= 0 && point.getY() < 1080 && point.getY() > 520 && !ScoreSystem.getInstance().isOver()){
+//            Force force = new Force(-(point.getX() -420)/2,-(point.getY() - 520));
+//
+//            if (ScoreSystem.getInstance().isRedTurn()){
+//                this.bodyRedBird.applyForce(force);
+//            } else {
+//                this.bodyBlueBird.applyForce(force);
+//            }
+//            // @TODO APPLIES FORCE
+//        }
+        if (point.getX() < 420 && point.getX() >= 0 && point.getY() < 1080 && point.getY() > 520){
+            this.shoot(-(point.getX() - 420)/2, -(point.getY() - 520));
         }
     }
 
     public void shoot(){
+        this.shoot(160.5, -134.0);
+    }
+
+    public void shoot(double x, double y){
         if (!ScoreSystem.getInstance().isOver()){
-            if (ScoreSystem.getInstance().isRedTurn()){
-                this.bodyRedBird.applyForce(new Force(160.5, -134.0));
-            } else {
-                this.bodyBlueBird.applyForce(new Force(160.5, -134.0));
+            if (ScoreSystem.getInstance().isRedTurn() && this.isRedPlayer){
+                this.bodyRedBird.applyForce(new Force(x, y));
+            } else if (!ScoreSystem.getInstance().isRedTurn() && !this.isRedPlayer){
+                this.bodyBlueBird.applyForce(new Force(x, y));
             }
         }
     }

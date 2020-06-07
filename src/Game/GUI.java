@@ -2,7 +2,6 @@ package Game;
 
 import Game.Scenery.GameScene;
 import Game.Scenery.MenuScene;
-import Game.Scenery.Scenery;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -10,8 +9,8 @@ public class GUI  extends Application {
 
     @Override
     public void start(Stage primaryStage){
-        Scenery menuScene = new MenuScene();
-        Scenery gameScene = new GameScene();
+        MenuScene menuScene = new MenuScene();
+        GameScene gameScene = new GameScene();
 
         menuScene.setPrimary(primaryStage);
         gameScene.setPrimary(primaryStage);

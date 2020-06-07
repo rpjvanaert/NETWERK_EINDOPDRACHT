@@ -22,12 +22,11 @@ import org.jfree.fx.ResizableCanvas;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
-public class GameScene implements Scenery{
+public class GameScene {
 
     private Stage primaryStage;
-    private Scenery nextScene;
+    private MenuScene nextScene;
     private Scene scene;
-//    private MenuScene menuScene;
 
     private Background background;
 
@@ -48,6 +47,7 @@ public class GameScene implements Scenery{
         this.hBox = new HBox();
 
         this.scoreLabel = new Label();
+        this.scoreLabel.setText(ScoreSystem.getInstance().toString());
 
         this.background = new Background();
 
@@ -57,7 +57,7 @@ public class GameScene implements Scenery{
 
         camera = new Camera(canvas, g -> draw(g), g2d);
 
-        this.init();
+//        this.init();
 
         new AnimationTimer(){
             long last = 1;
@@ -97,20 +97,18 @@ public class GameScene implements Scenery{
         //@TODO reset to menu
     }
 
-    private void init(){
-        this.gameEngine = new GameEngine(new World(), this.scoreLabel);
+    public void init(boolean playerRed){
+        this.gameEngine = new GameEngine(new World(), this.scoreLabel, playerRed);
         this.mousePicker = new MousePicker(this.canvas);
     }
 
     private void update(double deltaTime){
-        if (!mousePicker.readPos()){
-            Point2D mousePos = mousePicker.getMousePos();
-            this.gameEngine.shoot(mousePos);
-        }
-        this.gameEngine.update(deltaTime);
-
-        if (ScoreSystem.getInstance().isOver()){
-//            this.goToMenu();
+        if (mousePicker != null){
+            if (!mousePicker.readPos()){
+                Point2D mousePos = mousePicker.getMousePos();
+                this.gameEngine.shoot(mousePos);
+            }
+            this.gameEngine.update(deltaTime);
         }
     }
 
@@ -127,7 +125,9 @@ public class GameScene implements Scenery{
         graphics.scale(1, -1);
 
         //draw GameObjects
-        this.gameEngine.draw(graphics);
+        if (this.gameEngine != null){
+            this.gameEngine.draw(graphics);
+        }
 
         if (ScoreSystem.getInstance().isOver()){
             Font font = new Font("Arial", Font.PLAIN, 60);
@@ -150,5 +150,5 @@ public class GameScene implements Scenery{
 //        this.menuScene = menuScene;
 //    }
 
-    public void setNextScene(Scenery nextScene){ this.nextScene = nextScene; }
+    public void setNextScene(MenuScene nextScene){ this.nextScene = nextScene; }
 }

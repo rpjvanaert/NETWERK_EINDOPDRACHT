@@ -29,13 +29,13 @@ public class ScoreSystem {
 
     public static ScoreSystem getInstance(){
         if (instance == null){
-            instance = new ScoreSystem(8);
+            instance = new ScoreSystem(15);
         }
         return instance;
     }
 
     public void reset(){
-        instance = new ScoreSystem(8);
+        instance = new ScoreSystem(15);
     }
 
     public void addRed() {

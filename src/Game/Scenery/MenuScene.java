@@ -6,10 +6,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 
-public class MenuScene implements Scenery{
+public class MenuScene {
 
     private Stage primaryStage;
-    private Scenery nextScene;
+    private GameScene nextScene;
     private Scene scene;
     private BorderPane mainPane;
     private Button buttonJoin;
@@ -19,6 +19,7 @@ public class MenuScene implements Scenery{
 
         this.buttonJoin = new Button("Join");
         this.buttonJoin.setOnAction(event -> {
+            this.nextScene.init(true);
             this.primaryStage.setScene(this.nextScene.getScene());
         });
 
@@ -31,5 +32,5 @@ public class MenuScene implements Scenery{
 
     public void setPrimary(Stage primaryStage){ this.primaryStage = primaryStage; }
 
-    public void setNextScene(Scenery nextScene){ this.nextScene = nextScene; }
+    public void setNextScene(GameScene nextScene){ this.nextScene = nextScene; }
 }
