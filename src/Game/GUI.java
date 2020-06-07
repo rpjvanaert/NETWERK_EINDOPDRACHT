@@ -9,15 +9,19 @@ public class GUI  extends Application {
 
     @Override
     public void start(Stage primaryStage){
+        //Creates scenes.
         MenuScene menuScene = new MenuScene();
         GameScene gameScene = new GameScene();
 
+        //Sets primaryStage for both scenes.
         menuScene.setPrimary(primaryStage);
         gameScene.setPrimary(primaryStage);
 
+        //Sets nextScene for both scenes.
         menuScene.setNextScene(gameScene);
         gameScene.setNextScene(menuScene);
 
+        //primaryStage setup and .show().
         primaryStage.setScene(menuScene.getScene());
         primaryStage.setTitle("Angry birds");
         primaryStage.setHeight(1080);

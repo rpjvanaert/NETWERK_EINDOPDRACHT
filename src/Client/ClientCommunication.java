@@ -122,10 +122,4 @@ public class ClientCommunication {
             e.printStackTrace();
         }
     }
-
-//    public ScoreSystem getScoreSystem(){
-//        fetchGameData();
-//        return this.scoreSystem;
-//    }
-
 }

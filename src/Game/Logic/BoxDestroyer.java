@@ -55,6 +55,12 @@ public class BoxDestroyer implements ContactListener {
 
     }
 
+    /**
+     * begin
+     * Returns true so collision handling continues in World.
+     * @param contactPoint
+     * @return
+     */
     @Override
     public boolean begin(ContactPoint contactPoint) {
         return true;
@@ -62,36 +68,51 @@ public class BoxDestroyer implements ContactListener {
 
     @Override
     public void end(ContactPoint contactPoint) {
+        //Checks for contact if it has red ball in it.
         if (contactPoint.getBody1().equals(this.redBall) || contactPoint.getBody2().equals(this.redBall)){
+
+            //Handles and deletes crate if body2 is crate
             if (this.bodiesCrates.contains(contactPoint.getBody2())){
                 this.objectsCrates.remove(this.bodiesCrates.indexOf(contactPoint.getBody2()));
                 this.bodiesCrates.remove(contactPoint.getBody2());
                 this.world.removeBody(contactPoint.getBody2());
                 ScoreSystem.getInstance().addRed();
                 this.scoreLabel.setText(ScoreSystem.getInstance().toString());
+
+                //Handles and deletes crate if body1 is crate
             } else if (this.bodiesCrates.contains(contactPoint.getBody1())){
                 this.objectsCrates.remove(this.bodiesCrates.indexOf(contactPoint.getBody1()));
                 this.bodiesCrates.remove(contactPoint.getBody1());
                 this.world.removeBody(contactPoint.getBody1());
                 ScoreSystem.getInstance().addRed();
                 this.scoreLabel.setText(ScoreSystem.getInstance().toString());
+
+                //Handles if bird hits ground.
             } else if (this.ground.equals(contactPoint.getBody1()) || this.ground.equals(contactPoint.getBody2())){
                 ScoreSystem.getInstance().turn();
                 this.redBall = null;
             }
+
+            //Checks for contact if it has blue ball in it.
         } else if (contactPoint.getBody1().equals(this.blueBall) || contactPoint.getBody2().equals(this.blueBall)){
+
+            //Handles and deletes crate if body2 is crate
             if (this.bodiesCrates.contains(contactPoint.getBody2())){
                 this.objectsCrates.remove(this.bodiesCrates.indexOf(contactPoint.getBody2()));
                 this.bodiesCrates.remove(contactPoint.getBody2());
                 this.world.removeBody(contactPoint.getBody2());
                 ScoreSystem.getInstance().addBlue();
                 this.scoreLabel.setText(ScoreSystem.getInstance().toString());
+
+                //Handles and deletes crate if body1 is crate
             } else if (this.bodiesCrates.contains(contactPoint.getBody1())){
                 this.objectsCrates.remove(this.bodiesCrates.indexOf(contactPoint.getBody1()));
                 this.bodiesCrates.remove(contactPoint.getBody1());
                 this.world.removeBody(contactPoint.getBody1());
                 ScoreSystem.getInstance().addBlue();
                 this.scoreLabel.setText(ScoreSystem.getInstance().toString());
+
+                //Handles if bird hits ground.
             } else if (this.ground.equals(contactPoint.getBody1()) || this.ground.equals(contactPoint.getBody2())){
                 ScoreSystem.getInstance().turn();
                 this.blueBall = null;
@@ -99,11 +120,23 @@ public class BoxDestroyer implements ContactListener {
         }
     }
 
+    /**
+     * persist
+     * Returns true so collision handling continues in World.
+     * @param persistedContactPoint
+     * @return
+     */
     @Override
     public boolean persist(PersistedContactPoint persistedContactPoint) {
         return true;
     }
 
+    /**
+     * preSolve
+     * Returns true so collision handling continues in World.
+     * @param contactPoint
+     * @return
+     */
     @Override
     public boolean preSolve(ContactPoint contactPoint) {
         return true;
