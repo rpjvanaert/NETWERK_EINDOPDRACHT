@@ -1,5 +1,7 @@
 package Host;
 
+import Game.Logic.ScoreSystem;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,14 +14,14 @@ public class Server implements Runnable{
     private int port;
     private List<Thread> clientThreads;
     private List<Socket> clientSockets;
-    private GameData gameData;
+    private ScoreSystem scoreSystem;
 
-    public Server(int port, GameData gameData) {
+    public Server(int port, ScoreSystem scoreSystem) {
         this.port = port;
         this.stop = true;
         this.clientThreads = new ArrayList<>();
         this.clientSockets = new ArrayList<>();
-        this.gameData = gameData;
+        this.scoreSystem = scoreSystem;
     }
 
     @Override
@@ -35,11 +37,11 @@ public class Server implements Runnable{
                 Socket client = socket.accept();
                 System.out.println("Client added");
                 clientSockets.add(client);
-                Thread t =new Thread(new ClientThread(client, this.gameData));
+                Thread t =new Thread(new ClientThread(client, this.scoreSystem));
                 clientThreads.add(t);
                 t.start();
             }
-            gameData.start();
+            scoreSystem.start();
 
             }
         catch(IOException e){

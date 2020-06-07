@@ -1,5 +1,6 @@
 package Host;
 
+import Game.Logic.ScoreSystem;
 import org.dyn4j.geometry.Vector2;
 
 import java.io.*;
@@ -8,11 +9,11 @@ import java.net.Socket;
 public class ClientThread implements Runnable {
     private Socket client;
     private String playerID;
-    private GameData gameData;
+    private ScoreSystem scoreSystem;
 
-    public ClientThread(Socket client, GameData gameData) {
+    public ClientThread(Socket client, ScoreSystem scoreSystem) {
         this.client = client;
-        this.gameData = gameData;
+        this.scoreSystem = scoreSystem;
     }
 
     @Override
@@ -30,42 +31,36 @@ public class ClientThread implements Runnable {
             String playerAnswer = dataIn.readUTF();
             this.playerID = playerAnswer;
             System.out.println("Host got: " + playerAnswer);
-            gameData.setPlayer2(playerID);
+            scoreSystem.setPlayer2(playerID);
 
 
             dataOut.writeUTF("start");
 
-            while (running && gameData.isRunning()) {
+            while (running && scoreSystem.isRunning()) {
                 String command = dataIn.readUTF();
                 System.out.println("Got command: "+command);
                 switch (command) {
                     case "quit":
                         running = false;
-                        gameData.stopGame();
+                        scoreSystem.stopGame();
                         System.out.println("The game has ended");
                         break;
 
                     case "getData":
                         System.out.println("Sending gameData");
-                        objectOut.writeObject(this.gameData);
+                        objectOut.writeObject(this.scoreSystem);
                         break;
 
                     case "endTurn":
-                        this.gameData.setPlayer1Turn(!this.gameData.isPlayer1Turn());
-                        this.gameData.setHasShot(false);
+                        this.scoreSystem.turn();
                         System.out.println("Ended the turn");
                         break;
 
                     case "shoot":
-                        this.gameData.setHasShot(true);
                         try {
                             Object o = objectIn.readObject();
                             if(o instanceof Vector2){
-                                this.gameData.setBirdLocation((Vector2) o);
-                            }
-                            o = objectIn.readObject();
-                            if(o instanceof Vector2){
-                                this.gameData.setBirdForce((Vector2) o);
+                                this.scoreSystem.setBirdForce((Vector2) o);
                             }
                         }
 

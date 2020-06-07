@@ -1,6 +1,6 @@
 package Client;
 
-import Host.GameData;
+import Game.Logic.ScoreSystem;
 import org.dyn4j.geometry.Vector2;
 
 import java.io.*;
@@ -9,7 +9,7 @@ import java.net.Socket;
 public class ClientCommunication {
     private String playerID;
     private boolean isConnected;
-    private GameData gameData;
+    private ScoreSystem scoreSystem;
     private Socket socket;
     private DataInputStream dataIn;
     private DataOutputStream dataOut;
@@ -19,7 +19,7 @@ public class ClientCommunication {
     public ClientCommunication(String playerID) {
         this.playerID = playerID;
         this.isConnected = false;
-        this.gameData = null;
+        this.scoreSystem = null;
         this.socket = null;
         this.dataIn = null;
         this.dataOut = null;
@@ -86,8 +86,8 @@ public class ClientCommunication {
             System.out.println("Fetching data...");
             dataOut.writeUTF("getData");
             Object o = objectIn.readObject();
-            if(o instanceof GameData){
-                this.gameData = (GameData) o;
+            if(o instanceof ScoreSystem){
+                this.scoreSystem = (ScoreSystem) o;
             }
             System.out.println("Got gameData!");
         }
@@ -109,10 +109,9 @@ public class ClientCommunication {
         System.out.println("End turn");
     }
 
-    public void shoot(Vector2 birdLocation, Vector2 birdForce){
+    public void shoot(Vector2 birdForce){
         try {
             dataOut.writeUTF("shoot");
-            objectOut.writeObject(birdLocation);
             objectOut.writeObject(birdForce);
         }
         catch (IOException e){
@@ -120,9 +119,9 @@ public class ClientCommunication {
         }
     }
 
-    public GameData getGameData(){
+    public ScoreSystem getScoreSystem(){
         fetchGameData();
-        return this.gameData;
+        return this.scoreSystem;
     }
 
 }
