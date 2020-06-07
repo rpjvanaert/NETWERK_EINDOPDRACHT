@@ -12,18 +12,28 @@ public class MenuScene {
     private GameScene nextScene;
     private Scene scene;
     private BorderPane mainPane;
+    private Button buttonHost;
     private Button buttonJoin;
 
     public MenuScene(){
         this.mainPane = new BorderPane();
 
-        this.buttonJoin = new Button("Join");
-        this.buttonJoin.setOnAction(event -> {
+        this.buttonHost = new Button("Host");
+        this.buttonHost.setOnAction(event -> {
+            //@TODO server shit
             this.nextScene.init(true);
             this.primaryStage.setScene(this.nextScene.getScene());
         });
 
-        this.mainPane.setCenter(this.buttonJoin);
+        this.buttonJoin = new Button("Join");
+        this.buttonJoin.setOnAction(event -> {
+            //@TODO client shit
+            this.nextScene.init(false);
+            this.primaryStage.setScene(this.nextScene.getScene());
+        });
+
+        this.mainPane.setLeft(this.buttonHost);
+        this.mainPane.setRight(this.buttonJoin);
 
         this.scene = new Scene(this.mainPane);
     }
