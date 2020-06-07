@@ -32,12 +32,13 @@ public class Camera {
 
 
     public AffineTransform getTransform(int windowWidth, int windowHeight)  {
-        AffineTransform tx = new AffineTransform();
-        tx.translate(windowWidth/2, windowHeight/2);
-        tx.scale(zoom, zoom);
-        tx.translate(centerPoint.getX(), centerPoint.getY());
-        tx.rotate(rotation);
-        return tx;
+//        AffineTransform tx = new AffineTransform();
+//        tx.translate(windowWidth/2, windowHeight/2);
+//        tx.scale(zoom, zoom);
+//        tx.translate(centerPoint.getX(), centerPoint.getY());
+//        tx.rotate(rotation);
+//        return tx;
+        return AffineTransform.getTranslateInstance(windowWidth/2, windowHeight/2);
     }
 
     public void mouseDragged(MouseEvent e) {
