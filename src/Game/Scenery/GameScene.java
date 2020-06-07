@@ -1,8 +1,6 @@
 package Game.Scenery;
 
 import Game.Background;
-import Game.GUI;
-import Game.Logic.Camera;
 import Game.Logic.GameEngine;
 import Game.Logic.MousePicker;
 import Game.Logic.ScoreSystem;
@@ -11,7 +9,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -23,42 +20,41 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class GameScene {
-
+    //Creates scene and creates every component for gameScene
     private Stage primaryStage;
     private MenuScene nextScene;
     private Scene scene;
 
     private Background background;
 
-    private Camera camera;
     private BorderPane mainPane;
     private ResizableCanvas canvas;
 
     private HBox hBox;
     private Button shootBlue;
     private Label scoreLabel;
-    private javafx.scene.control.Button backButton;
+    private Button backButton;
 
     private GameEngine gameEngine;
     private MousePicker mousePicker;
 
     public GameScene(){
+        //Initializes layout managers
         this.mainPane = new BorderPane();
         this.hBox = new HBox();
 
+        //Initializes scoreLabel and sets text to score of ScoreSystem.
         this.scoreLabel = new Label();
         this.scoreLabel.setText(ScoreSystem.getInstance().toString());
 
         this.background = new Background();
 
+        //Initializes canvas  and puts it at bottom mainPane. Also creates FXGraphics2D for it.
         this.canvas = new ResizableCanvas(g -> draw(g), mainPane);
         this.mainPane.setBottom(this.canvas);
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
 
-        camera = new Camera(canvas, g -> draw(g), g2d);
-
-//        this.init();
-
+        //Normal Animation Timer.
         new AnimationTimer(){
             long last = 1;
 
@@ -73,20 +69,29 @@ public class GameScene {
             }
         }.start();
 
-        this.scene = new Scene(this.mainPane);
-
+        //Back button.
         this.backButton = new Button("Go back");
         this.backButton.setOnAction(event -> {
             this.goToMenu();
         });
+
+        //Shoots bird whose turn is.
         this.shootBlue = new Button("Shoot");
         this.shootBlue.setOnAction(event -> {
             this.gameEngine.shoot();
         });
+
+        //Puts every node together.
         this.hBox.getChildren().addAll(this.backButton, this.shootBlue, this.scoreLabel);
         this.mainPane.setTop(this.hBox);
+
+        this.scene = new Scene(this.mainPane);
     }
 
+    /**
+     * goToMenu
+     * Sets to menu.
+     */
     private void goToMenu(){
         GameScene gameScene = new GameScene();
         gameScene.setNextScene(this.nextScene);
@@ -94,14 +99,23 @@ public class GameScene {
         this.nextScene.setNextScene(gameScene);
         this.primaryStage.setScene(this.nextScene.getScene());
         ScoreSystem.getInstance().reset();
-        //@TODO reset to menu
     }
 
+    /**
+     * init
+     * Creates new GameEngine and MousePicker.
+     * @param playerRed
+     */
     public void init(boolean playerRed){
         this.gameEngine = new GameEngine(new World(), this.scoreLabel, playerRed);
         this.mousePicker = new MousePicker(this.canvas);
     }
 
+    /**
+     * update
+     * Updates GameScene, handles MousePicker
+     * @param deltaTime
+     */
     private void update(double deltaTime){
         if (mousePicker != null){
             if (!mousePicker.readPos()){
@@ -112,6 +126,11 @@ public class GameScene {
         }
     }
 
+    /**
+     * draw
+     * Draws background, gameObjects.
+     * @param graphics
+     */
     private void draw(FXGraphics2D graphics){
         graphics.setTransform(new AffineTransform());
         graphics.setBackground(Color.white);
@@ -121,7 +140,7 @@ public class GameScene {
 
         AffineTransform originalTransform = graphics.getTransform();
 
-        graphics.setTransform(camera.getTransform((int) canvas.getWidth(), (int) canvas.getHeight()));
+        graphics.setTransform(AffineTransform.getTranslateInstance(this.canvas.getWidth()/2, this.canvas.getHeight()/2));
         graphics.scale(1, -1);
 
         //draw GameObjects
@@ -142,13 +161,24 @@ public class GameScene {
         }
     }
 
+    /**
+     * getScene
+     * Returns scene.
+     * @return
+     */
     public Scene getScene(){ return this.scene; }
 
+    /**
+     * setPrimary
+     * Sets primary stage, for nextScene set.
+     * @param primaryStage
+     */
     public void setPrimary(Stage primaryStage){ this.primaryStage = primaryStage; }
 
-//    public void setMenuScene(MenuScene menuScene){
-//        this.menuScene = menuScene;
-//    }
-
+    /**
+     * setNextScene
+     * Sets next scene.
+     * @param nextScene
+     */
     public void setNextScene(MenuScene nextScene){ this.nextScene = nextScene; }
 }

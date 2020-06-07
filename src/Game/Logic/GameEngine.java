@@ -45,29 +45,39 @@ public class GameEngine {
 
     private static final double xSlingshot = -5.0;
 
+    /**
+     * GameEngine (Constructor)
+     * Creates world, with bodies and gameObjects.
+     * @param world
+     * @param scoreLabel
+     * @param playerRed
+     */
     public GameEngine(World world, Label scoreLabel, boolean playerRed){
         this.isFetching = false;
+
+        //Creates world with gravity
         this.world = world;
         this.world.setGravity(new Vector2(0, -9.8));
 
         this.isRedPlayer = playerRed;
 
-
         this.scoreLabel = scoreLabel;
 
+        //Creates GameObjects and bodies.
         this.objectCrates = new ArrayList<>();
-
         this.cratesGameObjects = new ArrayList<>();
         this.cratesBody = new ArrayList<>();
 
         this.gameObjectRedBird = null;
         this.gameObjectBlueBird = null;
 
+        //Creates boxes on rows.
         this.createBoxRow(0,3);
         this.createBoxRow(1,3);
         this.createBoxRow(2,4);
         this.createBoxRow(3,5);
 
+        //Creates ground.
         this.bodyGround = new Body();
         this.bodyGround.addFixture((Geometry.createRectangle(999, 0.8)));
         this.bodyGround.getTransform().setTranslation(0, -2.6);
@@ -76,6 +86,7 @@ public class GameEngine {
         this.world.addBody(this.bodyGround);
         this.gameObjectGround = new GameObject("/ground.png", this.bodyGround, new Vector2(0, -90), 1);
 
+        //Creates slingshot.
         this.bodySlingshot = new Body();
         this.bodySlingshot.addFixture(Geometry.createRectangle(0.4, 1.4));
         this.bodySlingshot.getTransform().setTranslation(xSlingshot, -1.3);
@@ -84,10 +95,8 @@ public class GameEngine {
         world.addBody(this.bodySlingshot);
         this.gameObjectSlingshot = new GameObject("/Slingshot.png", this.bodySlingshot, new Vector2(0, -60), 0.45);
 
+        //Creates red ball.
         this.setBall(true);
-        //public BoxDestroyer(World world, Label scoreLabel,
-        //                        ArrayList<GameObject> objectsCrates, Body redBall, Body blueBall,
-        //                        ArrayList<Body> bodiesCrates){
 
 
 
@@ -120,6 +129,11 @@ public class GameEngine {
 
     }
 
+    /**
+     * setBallNull
+     * Sets ball null, red for true, blue for false.
+     * @param isRed
+     */
     private void setBallNull(boolean isRed){
         if (isRed){
             this.world.removeBody(this.bodyRedBird);
@@ -132,6 +146,11 @@ public class GameEngine {
         }
     }
 
+    /**
+     * setBall
+     * Creates ball, red for true, blue for false.
+     * @param isRed
+     */
     private void setBall(boolean isRed){
         if (isRed){
             this.bodyRedBird = new Body();
@@ -152,6 +171,12 @@ public class GameEngine {
         }
     }
 
+    /**
+     * createBoxRow
+     * Creates box row at order of row with box height.
+     * @param row
+     * @param height
+     */
     private void createBoxRow(int row, int height){
         double yLowest = -2.2;
         double xLowest = 6;
@@ -162,6 +187,13 @@ public class GameEngine {
         }
     }
 
+    /**
+     * createBox
+     * Creates box at x and y coordinates.
+     * Handles Body and GameObject for it.
+     * @param x
+     * @param y
+     */
     private void createBox(double x, double y){
         Body box = new Body();
         box.addFixture(Geometry.createRectangle(0.8, 0.8));
@@ -176,27 +208,31 @@ public class GameEngine {
         this.cratesGameObjects.add(object);
     }
 
+    /**
+     * shoot
+     * Shoots bird with a force correctly with mousePos (Point2D).
+     * @param point
+     */
     public void shoot(Point2D point){
-//        this.bodyRedBird.setTransform();
-//        if (point.getX() < 420 && point.getX() >= 0 && point.getY() < 1080 && point.getY() > 520 && !ScoreSystem.getInstance().isOver()){
-//            Force force = new Force(-(point.getX() -420)/2,-(point.getY() - 520));
-//
-//            if (ScoreSystem.getInstance().isRedTurn()){
-//                this.bodyRedBird.applyForce(force);
-//            } else {
-//                this.bodyBlueBird.applyForce(force);
-//            }
-//            // @TODO APPLIES FORCE
-//        }
         if (point.getX() < 420 && point.getX() >= 0 && point.getY() < 1080 && point.getY() > 520){
             this.shoot(-(point.getX() - 420)/2, -(point.getY() - 520));
         }
     }
 
+    /**
+     * shoot
+     * Shoots with preset force.
+     */
     public void shoot(){
         this.shoot(160.5, -134.0);
     }
 
+    /**
+     * shoot
+     * Shoots with force given, the bird who's turn is, also send with client.
+     * @param x
+     * @param y
+     */
     public void shoot(double x, double y){
         if (!ScoreSystem.getInstance().isOver()){
             if (ScoreSystem.getInstance().isRedTurn() && this.isRedPlayer){
@@ -210,6 +246,11 @@ public class GameEngine {
         }
     }
 
+    /**
+     * update
+     * Updates world updates communication.
+     * @param deltaTime
+     */
     public void update(double deltaTime){
         world.update(deltaTime);
         if(!this.isRedPlayer) {
@@ -241,8 +282,12 @@ public class GameEngine {
         this.lastForce = ScoreSystem.getInstance().getBirdForce();
     }
 
+    /**
+     * draw
+     * Draws every GameObject
+     * @param g2d
+     */
     public void draw(FXGraphics2D g2d){
-//        this.gameObjects.forEach(gameObject -> gameObject.draw(g2d));
         this.objectCrates.forEach(gameObject -> gameObject.draw(g2d));
         this.gameObjectSlingshot.draw(g2d);
         this.gameObjectGround.draw(g2d);
