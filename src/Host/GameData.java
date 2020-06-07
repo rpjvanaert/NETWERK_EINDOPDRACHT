@@ -1,4 +1,4 @@
-package Server;
+package Host;
 
 import org.dyn4j.geometry.Vector2;
 

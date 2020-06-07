@@ -1,11 +1,10 @@
 package Client;
 
-import Server.GameData;
+import Host.GameData;
 import org.dyn4j.geometry.Vector2;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.logging.SocketHandler;
 
 public class ClientCommunication {
     private String playerID;
@@ -41,7 +40,7 @@ public class ClientCommunication {
             this.objectIn = new ObjectInputStream(this.socket.getInputStream());
 
             String server = this.dataIn.readUTF();
-            System.out.println("Server: "+ server);
+            System.out.println("Host: "+ server);
 
             String readyCheck = this.dataIn.readUTF();
             if(readyCheck.equals("Player ID?\n")){
@@ -75,6 +74,7 @@ public class ClientCommunication {
     public void quit(){
         try {
             dataOut.writeUTF("quit");
+
         }
         catch (IOException e){
             e.printStackTrace();
