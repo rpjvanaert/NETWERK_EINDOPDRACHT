@@ -94,9 +94,6 @@ public class BoxDestroyer implements ContactListener {
                 this.scoreLabel.setText(ScoreSystem.getInstance().toString());
             } else if (this.ground.equals(contactPoint.getBody1()) || this.ground.equals(contactPoint.getBody2())){
                 ScoreSystem.getInstance().turn();
-                if(!isRedPlayer) {
-                    this.client.endTurn();
-                }
                 this.blueBall = null;
             }
         }

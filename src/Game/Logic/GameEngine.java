@@ -41,10 +41,12 @@ public class GameEngine {
 
     private double updateTime;
     private double timeSinceLastUpdate;
+    private boolean isFetching;
 
     private static final double xSlingshot = -5.0;
 
     public GameEngine(World world, Label scoreLabel, boolean playerRed){
+        this.isFetching = false;
         this.world = world;
         this.world.setGravity(new Vector2(0, -9.8));
 
@@ -214,9 +216,17 @@ public class GameEngine {
             timeSinceLastUpdate += (deltaTime * 1000000);
             if(timeSinceLastUpdate >= updateTime) {
                 timeSinceLastUpdate = 0;
-                System.out.println("Updating scoreSystem...");
-                client.fetchGameData();
-                System.out.println("Update Succes!");
+                if(!isFetching) {
+                    Thread t = new Thread(() -> {
+                        System.out.println("Updating scoreSystem...");
+                        isFetching = true;
+                        client.fetchGameData();
+                        System.out.println("Got data");
+                        isFetching = false;
+                    });
+                    t.start();
+                }
+
             }
 
         }
